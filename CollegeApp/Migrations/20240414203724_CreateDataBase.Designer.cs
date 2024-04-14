@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CollegeApp.Migrations
 {
     [DbContext(typeof(CollegeDBContext))]
-    [Migration("20240322164313_ChangeUserTableColumName")]
-    partial class ChangeUserTableColumName
+    [Migration("20240414203724_CreateDataBase")]
+    partial class CreateDataBase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -224,6 +224,8 @@ namespace CollegeApp.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserTypeId");
+
                     b.ToTable("Users", (string)null);
                 });
 
@@ -251,6 +253,55 @@ namespace CollegeApp.Migrations
                     b.ToTable("UserRoleMappings", (string)null);
                 });
 
+            modelBuilder.Entity("CollegeApp.Data.UserType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserTypes", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "for Students",
+                            Name = "Student"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "for Faculty",
+                            Name = "Faculty"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "for Supporting Staff",
+                            Name = "Supporting Staff"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "for Parents",
+                            Name = "Parents"
+                        });
+                });
+
             modelBuilder.Entity("CollegeApp.Data.RolePrivilege", b =>
                 {
                     b.HasOne("CollegeApp.Data.Role", "Role")
@@ -271,6 +322,18 @@ namespace CollegeApp.Migrations
                         .HasConstraintName("FK_Students_Department");
 
                     b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("CollegeApp.Data.User", b =>
+                {
+                    b.HasOne("CollegeApp.Data.UserType", "UserType")
+                        .WithMany("Users")
+                        .HasForeignKey("UserTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Users_UserTypes");
+
+                    b.Navigation("UserType");
                 });
 
             modelBuilder.Entity("CollegeApp.Data.UserRoleMapping", b =>
@@ -309,6 +372,11 @@ namespace CollegeApp.Migrations
             modelBuilder.Entity("CollegeApp.Data.User", b =>
                 {
                     b.Navigation("UserRoleMappings");
+                });
+
+            modelBuilder.Entity("CollegeApp.Data.UserType", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

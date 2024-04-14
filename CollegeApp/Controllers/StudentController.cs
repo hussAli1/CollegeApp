@@ -13,7 +13,8 @@ namespace CollegeApp.Controllers
     [Route("api/[controller]")]
     [ApiController]
     //[EnableCors(PolicyName = "AllowAll")]
-    [Authorize(AuthenticationSchemes = "LoginForLocalUsers", Roles = "Superadmin,Admin")]
+    //[Authorize(AuthenticationSchemes = "LoginForLocalUsers", Roles = "Superadmin,Admin")]
+    [Authorize(Roles = "Superadmin,Admin")]
     public class StudentController : ControllerBase
     {
 
